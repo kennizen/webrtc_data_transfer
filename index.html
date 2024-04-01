@@ -7,15 +7,72 @@
     <title>DT</title>
   </head>
   <body>
-    <div class="w-full h-dvh flex items-center justify-center">
-      <div class="flex flex-col items-center gap-4">
-        <div
-          id="ice-candidates"
-          class="border border-slate-500 w-64 h-56 bg-slate-200 overflow-auto"
-        ></div>
-        <button id="connect-btn" class="px-4 py-2 bg-blue-200 rounded-md">Connect</button>
+    <div class="w-full h-dvh p-16">
+      <select class="border border-gray-700 rounded-md" name="peer-select" id="peer-select">
+        <option value="sender" selected>Sender</option>
+        <option value="receiver">Receiver</option>
+      </select>
+
+      <div id="sender" class="flex gap-8 mt-8">
+        <div class="flex flex-col gap-2">
+          <div
+            id="offer"
+            class="p-4 rounded-md border border-gray-500 max-w-64 h-40 overflow-x-auto overflow-y-auto break-words"
+          ></div>
+          <div class="flex items-center gap-2">
+            <button
+              id="create-offer-btn"
+              class="px-4 py-2 rounded-md bg-blue-300 flex-1 flex-shrink-0 whitespace-nowrap"
+            >
+              Create offer
+            </button>
+            <button id="copy-offer-btn" class="px-4 py-2 rounded-md bg-blue-300 flex-1 flex-shrink-0">Copy</button>
+          </div>
+        </div>
+        <div class="flex flex-col gap-2">
+          <div
+            contenteditable
+            id="accept-answer"
+            class="p-4 rounded-md border border-gray-500 h-40 w-52 overflow-auto"
+          ></div>
+          <button id="accept-answer-btn" class="px-4 py-2 rounded-md bg-blue-300">Accept answer</button>
+        </div>
+        <div class="flex flex-col gap-2">
+          <div
+            id="ice-can"
+            class="p-4 rounded-md border border-gray-500 h-40 w-52 overflow-x-hidden overflow-y-auto flex flex-col gap-2 break-words"
+          ></div>
+          <button id="copy-ice-can-btn" class="px-4 py-2 rounded-md bg-blue-300">Copy ice candidates</button>
+        </div>
+      </div>
+
+      <div id="receiver" class="flex gap-8 mt-8">
+        <div class="flex flex-col gap-2">
+          <div
+            contenteditable
+            id="accept-offer"
+            class="p-4 rounded-md border border-gray-500 h-40 w-52 overflow-auto"
+          ></div>
+          <button id="accept-offer-btn" class="px-4 py-2 rounded-md bg-blue-300">Accept offer</button>
+        </div>
+        <div class="flex flex-col gap-2">
+          <div
+            id="answer"
+            class="p-4 rounded-md border border-gray-500 max-w-64 min-w-52 h-40 overflow-x-auto overflow-y-auto break-words"
+          ></div>
+          <button id="copy-answer-btn" class="px-4 py-2 rounded-md bg-blue-300 flex-1 flex-shrink-0">Copy answer</button>
+        </div>
+        <div class="flex flex-col gap-2">
+          <div
+            contenteditable
+            id="remote-ice-can"
+            class="p-4 rounded-md border border-gray-500 h-40 w-52 overflow-auto"
+          ></div>
+          <button id="add-remote-ice-can-btn" class="px-4 py-2 rounded-md bg-blue-300">Add ice candidates</button>
+        </div>
       </div>
     </div>
+
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

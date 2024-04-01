@@ -1,66 +1,94 @@
 import "./output.css";
 
+const servers = {
+  iceServers: [
+    {
+      urls: ["stun:stun.l.google.com:19302", "stun:stun1.l.google.com:19302", "stun:stun2.l.google.com:19302"],
+    },
+  ],
+};
+
 (() => {
-  const servers = {
-    iceServers: [
-      {
-        urls: [
-          "stun:stun.l.google.com:19302",
-          "stun:stun1.l.google.com:19302",
-          "stun:stun2.l.google.com:19302",
-        ],
-      },
-    ],
-  };
+  const selectNode = document.getElementById("peer-select");
 
-  const divNode = document.getElementById("ice-candidates");
-  const btnNode = document.getElementById("connect-btn");
+  const offerNode = document.getElementById("offer");
+  const createOfferBtn = document.getElementById("create-offer");
+  const copyOfferBtn = document.getElementById("copy-offer");
+  const iceCanNode = document.getElementById("ice-can");
+  const copyIceCanBtn = document.getElementById("copy-ice-can");
+  const ansNode = document.getElementById("answer");
+  const creatAnsBtn = document.getElementById("create-ans");
+  const copyAnsBtn = document.getElementById("copy-answer");
+  const addAnsNode = document.getElementById("add-answer");
+  const addAnsBtn = document.getElementById("add-answer-btn");
+  const addIceCanNode = document.getElementById("remote-ice-can");
+  const addIceCanBtn = document.getElementById("add-ice-can");
 
-  if (!divNode || !btnNode) return;
+  const peerConnection = new RTCPeerConnection(servers);
+  const dataChannel = peerConnection.createDataChannel("myDataChannel");
 
-  btnNode.addEventListener("click", createPeerConnnection);
+  selectNode?.addEventListener("change", handleSelectChange);
 
-  async function createPeerConnnection() {
-    console.log("connecting");
-    const peerConnection = new RTCPeerConnection(servers);
+  createOfferBtn?.addEventListener("click", handleCreateOffer);
+  copyOfferBtn?.addEventListener("click", handleOfferCopy);
+  copyIceCanBtn?.addEventListener("click", handleIceCandidatesCopy);
+  addAnsBtn?.addEventListener("click", handleAddAnswer);
+  creatAnsBtn?.addEventListener("click", handleCreateAnswer);
+  copyAnsBtn?.addEventListener("click", handleAnswerCopy);
 
-    // Create data channel
-    const dataChannel = peerConnection.createDataChannel("myDataChannel");
+  peerConnection.onicecandidate = handleIceCandidate;
+  peerConnection.oniceconnectionstatechange = handleIceConnectionStateChange;
 
-    // Set up event listeners for data channel
-    dataChannel.onopen = handleDataChannelOpen;
-    dataChannel.onclose = handleDataChannelClose;
-    dataChannel.onmessage = handleDataChannelMessage;
+  function handleSelectChange(e: Event) {
+    console.log((e.target as HTMLSelectElement).value);
+  }
 
-    // Set up event listeners for ICE candidates
-    peerConnection.onicecandidate = handleICECandidate;
-
+  async function handleCreateOffer() {
     const offer = await peerConnection.createOffer();
     await peerConnection.setLocalDescription(offer);
     console.log("offer", offer);
+    if (offerNode) offerNode.innerText = btoa(JSON.stringify(offer));
   }
 
-  // Event handler for data channel open
-  function handleDataChannelOpen(event: Event) {
-    console.log("Data channel opened");
+  async function handleCreateAnswer() {
+    const answer = await peerConnection.createAnswer();
+    await peerConnection.setLocalDescription(answer);
+    console.log("answer", answer);
+    if (ansNode) ansNode.innerText = btoa(JSON.stringify(answer));
   }
 
-  // Event handler for data channel close
-  function handleDataChannelClose(event: Event) {
-    console.log("Data channel closed");
+  async function handleOfferCopy() {
+    const offer = offerNode?.innerText;
+    if (offer) await navigator.clipboard.writeText(offer);
   }
 
-  // Event handler for receiving messages on data channel
-  function handleDataChannelMessage(event: MessageEvent) {
-    console.log("Received message:", event.data);
+  async function handleAnswerCopy() {
+    const answer = ansNode?.innerText;
+    if (answer) await navigator.clipboard.writeText(answer);
   }
 
-  // Event handler for ICE candidates
-  function handleICECandidate(event: RTCPeerConnectionIceEvent) {
-    if (event.candidate) {
-      // Send ICE candidate to the remote peer (signaling)
-      // For simplicity, this step is skipped in this example.
-      console.log("candidtades", event.candidate);
+  async function handleIceCandidate(event: RTCPeerConnectionIceEvent) {
+    if (event.candidate && iceCanNode) {
+      console.log("candidate", event.candidate);
+      const child = document.createElement("p");
+      child.innerText = btoa(JSON.stringify(event.candidate));
+      iceCanNode.append(child);
     }
   }
+
+  function handleIceConnectionStateChange() {
+    console.log("connection state", peerConnection.iceConnectionState);
+  }
+
+  async function handleIceCandidatesCopy() {
+    const candidates: string[] = [];
+
+    iceCanNode?.childNodes.forEach((child) => {
+      candidates.push((child as HTMLElement).innerText);
+    });
+
+    await navigator.clipboard.writeText(JSON.stringify(candidates));
+  }
+
+  async function handleAddAnswer() {}
 })();
