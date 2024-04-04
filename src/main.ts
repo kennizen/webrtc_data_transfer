@@ -10,6 +10,8 @@ const servers = {
 
 (() => {
   const selectNode = document.getElementById("peer-select");
+  const sender = document.getElementById('sender')
+  const receiver = document.getElementById("receiver")
 
   const offerNode = document.getElementById("offer");
   const createOfferBtn = document.getElementById("create-offer");
@@ -40,7 +42,18 @@ const servers = {
   peerConnection.oniceconnectionstatechange = handleIceConnectionStateChange;
 
   function handleSelectChange(e: Event) {
-    console.log((e.target as HTMLSelectElement).value);
+    const val = (e.target as HTMLSelectElement).value
+
+    if(!sender || !receiver) return;
+
+    if(val === "sender"){
+      sender.style.display = "flex";
+      receiver.style.display = "none"
+    }
+    else if(val === "receiver"){
+      sender.style.display = "none";
+      receiver.style.display = "flex"
+    }
   }
 
   async function handleCreateOffer() {
