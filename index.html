@@ -37,13 +37,6 @@
           ></div>
           <button id="accept-answer-btn" class="px-4 py-2 rounded-md bg-blue-300">Accept answer</button>
         </div>
-        <div class="flex flex-col gap-2">
-          <div
-            id="ice-can"
-            class="p-4 rounded-md border border-gray-500 h-40 w-52 overflow-x-hidden overflow-y-auto flex flex-col gap-2 break-words"
-          ></div>
-          <button id="copy-ice-can-btn" class="px-4 py-2 rounded-md bg-blue-300">Copy ice candidates</button>
-        </div>
       </div>
 
       <div id="receiver" class="gap-8 mt-8 hidden">
@@ -64,6 +57,9 @@
             Copy answer
           </button>
         </div>
+      </div>
+
+      <div id="candidates" class="flex gap-4 mt-8">
         <div class="flex flex-col gap-2">
           <div
             contenteditable
@@ -72,7 +68,15 @@
           ></div>
           <button id="add-remote-ice-can-btn" class="px-4 py-2 rounded-md bg-blue-300">Add ice candidates</button>
         </div>
+        <div class="flex flex-col gap-2">
+          <div
+            id="ice-can"
+            class="p-4 rounded-md border border-gray-500 h-40 w-52 overflow-x-hidden overflow-y-auto flex flex-col gap-2 break-words"
+          ></div>
+          <button id="copy-ice-can-btn" class="px-4 py-2 rounded-md bg-blue-300">Copy ice candidates</button>
+        </div>
       </div>
+      
     </div>
 
     <script type="module" src="/src/main.ts"></script>
