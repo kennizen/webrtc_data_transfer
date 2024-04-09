@@ -10,3 +10,11 @@ export function str2ab(str: string) {
   }
   return buf;
 }
+
+export function sleep(delay: number) {
+  return new Promise((res, rej) => {
+    setTimeout(() => {
+      res(delay);
+    }, delay);
+  });
+}

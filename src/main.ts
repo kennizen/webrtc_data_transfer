@@ -1,5 +1,5 @@
 import "./output.css";
-import { ab2str, str2ab } from "./utils";
+import { ab2str, sleep, str2ab } from "./utils";
 
 interface IPayloadInit {
   type: "init";
@@ -80,6 +80,8 @@ const servers = {
 
   // data channel
   const dataChannel = peerConnection.createDataChannel("dataChannel");
+  dataChannel.bufferedAmountLowThreshold = 65535;
+
   let receiveChan = null;
 
   // file system apis
@@ -216,13 +218,18 @@ const servers = {
   }
 
   async function uploadData() {
-    const chunkSize = 15 * 1024; // bytes
+    const chunkSize = 24 * 1024; // bytes
     let offset = 0;
 
     while (offset < file.size) {
       const chunk = file.slice(offset, offset + chunkSize);
       const buffer = await chunk.arrayBuffer();
+
       dataChannel.send(JSON.stringify({ type: "msg", pos: offset, data: ab2str(buffer) } as IPayloadMsg));
+      console.log("sent data", { type: "msg", pos: offset, data: ab2str(buffer) });
+
+      await sleep(100);
+
       offset += chunkSize;
     }
 
