@@ -13,70 +13,99 @@
         <option value="receiver">Receiver</option>
       </select>
 
-      <div id="sender" class="flex gap-8 mt-8">
-        <div class="flex flex-col gap-2">
-          <div
-            id="offer"
-            class="p-4 rounded-md border border-gray-500 max-w-64 h-40 overflow-x-auto overflow-y-auto break-words"
-          ></div>
-          <div class="flex items-center gap-2">
-            <button
-              id="create-offer-btn"
-              class="px-4 py-2 rounded-md bg-blue-300 flex-1 flex-shrink-0 whitespace-nowrap"
-            >
-              Create offer
+      <div class="flex gap-16 mt-8">
+        <div id="sender" class="flex gap-8">
+          <div class="flex flex-col gap-2">
+            <div
+              id="offer"
+              class="p-4 rounded-md border border-gray-500 max-w-64 h-40 overflow-x-auto overflow-y-auto break-words"
+            ></div>
+            <div class="flex items-center gap-2">
+              <button
+                id="create-offer-btn"
+                class="px-4 py-2 rounded-md bg-blue-300 flex-1 flex-shrink-0 whitespace-nowrap active:bg-blue-400"
+              >
+                Create offer
+              </button>
+              <button
+                id="copy-offer-btn"
+                class="px-4 py-2 rounded-md bg-blue-300 flex-1 flex-shrink-0 active:bg-blue-400"
+              >
+                Copy
+              </button>
+            </div>
+          </div>
+          <div class="flex flex-col gap-2">
+            <div
+              contenteditable
+              id="accept-answer"
+              class="p-4 rounded-md border border-gray-500 h-40 w-52 overflow-auto"
+            ></div>
+            <button id="accept-answer-btn" class="px-4 py-2 rounded-md bg-blue-300 active:bg-blue-400">
+              Accept answer
             </button>
-            <button id="copy-offer-btn" class="px-4 py-2 rounded-md bg-blue-300 flex-1 flex-shrink-0">Copy</button>
           </div>
         </div>
-        <div class="flex flex-col gap-2">
-          <div
-            contenteditable
-            id="accept-answer"
-            class="p-4 rounded-md border border-gray-500 h-40 w-52 overflow-auto"
-          ></div>
-          <button id="accept-answer-btn" class="px-4 py-2 rounded-md bg-blue-300">Accept answer</button>
+        <div id="receiver" class="gap-8 hidden">
+          <div class="flex flex-col gap-2">
+            <div
+              contenteditable
+              id="accept-offer"
+              class="p-4 rounded-md border border-gray-500 h-40 w-52 overflow-auto"
+            ></div>
+            <button id="accept-offer-btn" class="px-4 py-2 rounded-md bg-blue-300 active:bg-blue-400">
+              Accept offer
+            </button>
+          </div>
+          <div class="flex flex-col gap-2">
+            <div
+              id="answer"
+              class="p-4 rounded-md border border-gray-500 max-w-64 min-w-52 h-40 overflow-x-auto overflow-y-auto break-words"
+            ></div>
+            <button
+              id="copy-answer-btn"
+              class="px-4 py-2 rounded-md bg-blue-300 active:bg-blue-400 flex-1 flex-shrink-0"
+            >
+              Copy answer
+            </button>
+          </div>
+        </div>
+        <div>
+          <h5 class="font-semibold text-xl">Connection status</h5>
+          <p id="connection-status">Not connected</p>
         </div>
       </div>
 
-      <div id="receiver" class="gap-8 mt-8 hidden">
-        <div class="flex flex-col gap-2">
-          <div
-            contenteditable
-            id="accept-offer"
-            class="p-4 rounded-md border border-gray-500 h-40 w-52 overflow-auto"
-          ></div>
-          <button id="accept-offer-btn" class="px-4 py-2 rounded-md bg-blue-300">Accept offer</button>
+      <div class="flex gap-16 mt-8">
+        <div id="candidates" class="flex gap-4">
+          <div class="flex flex-col gap-2">
+            <div
+              contenteditable
+              id="remote-ice-can"
+              class="p-4 rounded-md border border-gray-500 h-40 w-52 overflow-auto"
+            ></div>
+            <button id="add-remote-ice-can-btn" class="px-4 py-2 rounded-md bg-blue-300 active:bg-blue-400">
+              Add ice candidates
+            </button>
+          </div>
+          <div class="flex flex-col gap-2">
+            <div
+              id="ice-can"
+              class="p-4 rounded-md border border-gray-500 h-40 w-52 overflow-x-hidden overflow-y-auto flex flex-col gap-2 break-words"
+            ></div>
+            <button id="copy-ice-can-btn" class="px-4 py-2 rounded-md bg-blue-300 active:bg-blue-400">
+              Copy ice candidates
+            </button>
+          </div>
         </div>
-        <div class="flex flex-col gap-2">
-          <div
-            id="answer"
-            class="p-4 rounded-md border border-gray-500 max-w-64 min-w-52 h-40 overflow-x-auto overflow-y-auto break-words"
-          ></div>
-          <button id="copy-answer-btn" class="px-4 py-2 rounded-md bg-blue-300 flex-1 flex-shrink-0">
-            Copy answer
-          </button>
+        <div id="select-file" class="hidden">
+          <p class="font-semibold text-xl mb-2">Select a file to transfer</p>
+          <button id="select-file-btn" class="rounded-md bg-green-300 px-4 py-1 active:bg-green-400">Select</button>
         </div>
+        <button id="receive-file-btn" class="hidden rounded-md bg-green-300 px-4 py-1 active:bg-green-400">
+          Receive file
+        </button>
       </div>
-
-      <div id="candidates" class="flex gap-4 mt-8">
-        <div class="flex flex-col gap-2">
-          <div
-            contenteditable
-            id="remote-ice-can"
-            class="p-4 rounded-md border border-gray-500 h-40 w-52 overflow-auto"
-          ></div>
-          <button id="add-remote-ice-can-btn" class="px-4 py-2 rounded-md bg-blue-300">Add ice candidates</button>
-        </div>
-        <div class="flex flex-col gap-2">
-          <div
-            id="ice-can"
-            class="p-4 rounded-md border border-gray-500 h-40 w-52 overflow-x-hidden overflow-y-auto flex flex-col gap-2 break-words"
-          ></div>
-          <button id="copy-ice-can-btn" class="px-4 py-2 rounded-md bg-blue-300">Copy ice candidates</button>
-        </div>
-      </div>
-      
     </div>
 
     <script type="module" src="/src/main.ts"></script>

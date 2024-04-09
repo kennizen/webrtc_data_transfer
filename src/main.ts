@@ -1,4 +1,26 @@
 import "./output.css";
+import { ab2str, str2ab } from "./utils";
+
+interface IPayloadInit {
+  type: "init";
+  fileName: string;
+  fileType: string;
+  fileSize: number;
+}
+
+interface IPayloadMsg {
+  type: "msg";
+  pos: number;
+  data: string;
+}
+
+interface IPayloadEnd {
+  type: "end";
+}
+
+interface IPayloadBegin {
+  type: "begin";
+}
 
 const servers = {
   iceServers: [
@@ -13,6 +35,7 @@ const servers = {
   const selectNode = document.getElementById("peer-select");
   const sender = document.getElementById("sender");
   const receiver = document.getElementById("receiver");
+  let selNodeVal = "sender";
 
   selectNode?.addEventListener("change", handleSelectChange);
 
@@ -45,16 +68,41 @@ const servers = {
   copyIceCanBtn?.addEventListener("click", handleIceCandidatesCopy);
   remodeIceCanBtn?.addEventListener("click", handleAddIceCandidates);
 
-  const peerConnection = new RTCPeerConnection(servers);
-  const dataChannel = peerConnection.createDataChannel("myDataChannel");
+  // info
+  const conNode = document.getElementById("connection-status");
 
-  dataChannel.addEventListener("open", () => console.log("data is transferrable"));
+  // connection
+  const peerConnection = new RTCPeerConnection(servers);
 
   peerConnection.onicecandidate = handleIceCandidate;
   peerConnection.oniceconnectionstatechange = handleIceConnectionStateChange;
+  peerConnection.ondatachannel = handleOnDataChannel;
+
+  // data channel
+  const dataChannel = peerConnection.createDataChannel("dataChannel");
+  let receiveChan = null;
+
+  // file system apis
+  let file: File;
+  let newHandle: FileSystemFileHandle;
+  let writableStream: FileSystemWritableFileStream;
+  const selFileNode = document.getElementById("select-file");
+  const selFileBtn = document.getElementById("select-file-btn");
+
+  selFileBtn?.addEventListener("click", handleSelectFile);
+
+  // methods
+  function handleOnDataChannel(ev: RTCDataChannelEvent) {
+    receiveChan = ev.channel;
+    receiveChan.onopen = handleDataChannelOpen;
+    receiveChan.onclose = handleDataChannelClose;
+    receiveChan.onerror = handleDataChannelError;
+    receiveChan.onmessage = handleDataChannelMsg;
+  }
 
   function handleSelectChange(e: Event) {
     const val = (e.target as HTMLSelectElement).value;
+    selNodeVal = val;
 
     if (!sender || !receiver) return;
 
@@ -136,6 +184,97 @@ const servers = {
   }
 
   function handleIceConnectionStateChange() {
+    if (!conNode) return;
     console.log("connection state", peerConnection.iceConnectionState);
+    conNode.textContent = peerConnection.iceConnectionState;
+  }
+
+  async function handleSelectFile() {
+    const [fileData] = await window.showOpenFilePicker();
+    file = await fileData.getFile();
+
+    console.log(file);
+
+    dataChannel.send(
+      JSON.stringify({ fileName: file.name, fileSize: file.size, fileType: file.type, type: "init" } as IPayloadInit)
+    );
+  }
+
+  function handleDataChannelOpen(ev: Event) {
+    console.log("channel open", ev);
+    if (selNodeVal === "receiver" || !selFileNode) return;
+
+    selFileNode.style.display = "block";
+  }
+
+  function handleDataChannelClose(ev: Event) {
+    console.log("channel close", ev);
+  }
+
+  function handleDataChannelError(ev: Event) {
+    console.log("channel error", ev);
+  }
+
+  async function uploadData() {
+    const chunkSize = 15 * 1024; // bytes
+    let offset = 0;
+
+    while (offset < file.size) {
+      const chunk = file.slice(offset, offset + chunkSize);
+      const buffer = await chunk.arrayBuffer();
+      dataChannel.send(JSON.stringify({ type: "msg", pos: offset, data: ab2str(buffer) } as IPayloadMsg));
+      offset += chunkSize;
+    }
+
+    dataChannel.send(JSON.stringify({ type: "end" } as IPayloadEnd));
+    // dataChannel.close();
+  }
+
+  async function handleDataChannelMsg(ev: MessageEvent<any>) {
+    console.log("channel msg", ev);
+
+    let dataObj: IPayloadInit | IPayloadEnd | IPayloadMsg | IPayloadBegin = JSON.parse(ev.data);
+
+    if (dataObj) {
+      switch (dataObj.type) {
+        case "init":
+          {
+            const recvFileBtn = document.getElementById("receive-file-btn");
+
+            if (!recvFileBtn) return;
+
+            recvFileBtn.addEventListener("click", async () => {
+              newHandle = await window.showSaveFilePicker({
+                suggestedName: dataObj.fileName,
+              });
+              writableStream = await newHandle.createWritable();
+              dataChannel.send(JSON.stringify({ type: "begin" } as IPayloadBegin));
+            });
+
+            recvFileBtn.style.display = "block";
+          }
+          break;
+        case "msg":
+          {
+            const data = str2ab(dataObj.data);
+            await writableStream.write({ type: "write", position: dataObj.pos, data: new Blob([data]) });
+          }
+          break;
+        case "end":
+          {
+            console.log("waiting channel close");
+            await writableStream.close();
+            console.log("channel closed");
+          }
+          break;
+        case "begin":
+          {
+            await uploadData();
+          }
+          break;
+        default:
+          break;
+      }
+    }
   }
 })();
