@@ -81,6 +81,9 @@ const servers = {
   // data channel
   const dataChannel = peerConnection.createDataChannel("dataChannel");
   dataChannel.bufferedAmountLowThreshold = 65535;
+  dataChannel.onbufferedamountlow = (ev: Event) => {
+    console.log(ev);
+  };
 
   let receiveChan = null;
 
@@ -228,7 +231,11 @@ const servers = {
       dataChannel.send(JSON.stringify({ type: "msg", pos: offset, data: ab2str(buffer) } as IPayloadMsg));
       console.log("sent data", { type: "msg", pos: offset, data: ab2str(buffer) });
 
-      await sleep(100);
+      // await sleep(100);
+
+      // if (dataChannel.bufferedAmount && dataChannel.bufferedAmount > 65535) {
+      //   break;
+      // }
 
       offset += chunkSize;
     }
