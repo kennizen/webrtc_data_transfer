@@ -46,9 +46,9 @@ const servers = {
   const acceptAnsNode = document.getElementById("accept-answer");
   const acceptAnsBtn = document.getElementById("accept-answer-btn");
 
-  createOfferBtn?.addEventListener("click", handleCreateOffer);
-  copyOfferBtn?.addEventListener("click", handleOfferCopy);
-  acceptAnsBtn?.addEventListener("click", handleAcceptAnswer);
+  createOfferBtn?.addEventListener("pointerup", handleCreateOffer);
+  copyOfferBtn?.addEventListener("pointerup", handleOfferCopy);
+  acceptAnsBtn?.addEventListener("pointerup", handleAcceptAnswer);
 
   // receiver
   const acceptOfferBtn = document.getElementById("accept-offer-btn");
@@ -56,8 +56,8 @@ const servers = {
   const ansNode = document.getElementById("answer");
   const copyAnsBtn = document.getElementById("copy-answer-btn");
 
-  acceptOfferBtn?.addEventListener("click", handleAcceptOffer);
-  copyAnsBtn?.addEventListener("click", handleAnswerCopy);
+  acceptOfferBtn?.addEventListener("pointerup", handleAcceptOffer);
+  copyAnsBtn?.addEventListener("pointerup", handleAnswerCopy);
 
   // ice candidates
   const iceCanNode = document.getElementById("ice-can");
@@ -65,8 +65,8 @@ const servers = {
   const remoteIceCanNode = document.getElementById("remote-ice-can");
   const remodeIceCanBtn = document.getElementById("add-remote-ice-can-btn");
 
-  copyIceCanBtn?.addEventListener("click", handleIceCandidatesCopy);
-  remodeIceCanBtn?.addEventListener("click", handleAddIceCandidates);
+  copyIceCanBtn?.addEventListener("pointerup", handleIceCandidatesCopy);
+  remodeIceCanBtn?.addEventListener("pointerup", handleAddIceCandidates);
 
   // info
   const conNode = document.getElementById("connection-status");
@@ -94,7 +94,7 @@ const servers = {
   const selFileNode = document.getElementById("select-file");
   const selFileBtn = document.getElementById("select-file-btn");
 
-  selFileBtn?.addEventListener("click", handleSelectFile);
+  selFileBtn?.addEventListener("pointerup", handleSelectFile);
 
   // methods
   function handleOnDataChannel(ev: RTCDataChannelEvent) {
@@ -257,7 +257,7 @@ const servers = {
 
             if (!recvFileBtn) return;
 
-            recvFileBtn.addEventListener("click", async () => {
+            recvFileBtn.addEventListener("pointerup", async () => {
               newHandle = await window.showSaveFilePicker({
                 suggestedName: dataObj.fileName,
               });
