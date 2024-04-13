@@ -244,7 +244,7 @@ const servers = {
   }
 
   async function handleDataChannelMsg(ev: MessageEvent<any>) {
-    console.log("channel msg", ev);
+    // console.log("channel msg", ev);
 
     let dataObj: IPayloadInit | IPayloadEnd | IPayloadMsg | IPayloadBegin = JSON.parse(ev.data);
 
