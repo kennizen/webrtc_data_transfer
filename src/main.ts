@@ -1,4 +1,5 @@
 import "./output.css";
+import { SendQueueManager } from "./taskQueue";
 import { ab2str, sleep, str2ab } from "./utils";
 
 interface IPayloadInit {
@@ -25,12 +26,17 @@ interface IPayloadBegin {
 const servers = {
   iceServers: [
     {
-      urls: ["stun:stun.l.google.com:19302", "stun:stun1.l.google.com:19302", "stun:stun2.l.google.com:19302"],
+      urls: ["stun:stun.l.google.com:19302", "stun:stun1.l.google.com:19302"],
     },
   ],
 };
 
 (() => {
+  if (window.showOpenFilePicker === undefined || window.showSaveFilePicker === undefined) {
+    alert("Currently only supports chrome in PC");
+    return;
+  }
+
   // selector
   const selectNode = document.getElementById("peer-select");
   const sender = document.getElementById("sender");
@@ -80,10 +86,6 @@ const servers = {
 
   // data channel
   const dataChannel = peerConnection.createDataChannel("dataChannel");
-  dataChannel.bufferedAmountLowThreshold = 65535;
-  dataChannel.onbufferedamountlow = (ev: Event) => {
-    console.log(ev);
-  };
 
   let receiveChan = null;
 
@@ -224,20 +226,17 @@ const servers = {
     const chunkSize = 24 * 1024; // bytes
     let offset = 0;
 
+    const manager = new SendQueueManager(dataChannel);
+
     while (offset < file.size) {
       const chunk = file.slice(offset, offset + chunkSize);
       const buffer = await chunk.arrayBuffer();
 
-      dataChannel.send(JSON.stringify({ type: "msg", pos: offset, data: ab2str(buffer) } as IPayloadMsg));
-      console.log("sent data", { type: "msg", pos: offset, data: ab2str(buffer) });
+      const val = await manager.sendData(
+        JSON.stringify({ type: "msg", pos: offset, data: ab2str(buffer) } as IPayloadMsg)
+      );
 
-      // await sleep(100);
-
-      // if (dataChannel.bufferedAmount && dataChannel.bufferedAmount > 65535) {
-      //   break;
-      // }
-
-      offset += chunkSize;
+      if (val) offset += chunkSize;
     }
 
     dataChannel.send(JSON.stringify({ type: "end" } as IPayloadEnd));
